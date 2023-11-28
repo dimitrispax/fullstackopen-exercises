@@ -1,5 +1,16 @@
 import { useState } from 'react'
 
+const Anecdote = ({ Title, Anecdote, Votes }) => {
+  return (
+    <div>
+      <h2>{Title}</h2>
+      <p>{Anecdote}</p>
+      <p>has {Votes} votes</p>
+    </div>
+  )
+}
+
+
 const App = () => {
   const anecdotes = [
     'If it hurts, do it more often.',
@@ -13,15 +24,37 @@ const App = () => {
   ]
 
   const [selected, setSelected] = useState(0)
+  const [votes, setVotes] = useState(new Uint8Array(anecdotes.length));
+  const [maxVotes, setMaxVotes] = useState(0);
+  /* Function shows a random next anecdote. */
+  const showNextAnecdote = () => {
+    setSelected(Math.floor(Math.random() * (anecdotes.length)))
+  }
+
+  /* Function that adds one vote on the current anecdote. */
+  const voteAnecdote = () => {
+    const votesCopy = [...votes]; // Copy of the votes array.
+
+    votesCopy[selected] += 1; // Incrementing the vote count of the 
+    setVotes(votesCopy);      // selected anecdote and changing the state.
+  }
 
   return (
     <>
+      <Anecdote
+        Title="Anecdote of the day"
+        Anecdote={anecdotes[selected]}
+        Votes={votes[selected]}
+      />
       <div>
-        {anecdotes[selected]}
+        <button onClick={voteAnecdote}>Vote</button>
+        <button onClick={showNextAnecdote}>Next Anecdote</button>
       </div>
-      <div>
-        <button onClick={() => setSelected(Math.floor(Math.random() * (anecdotes.length)))}>Next Anecdote</button>
-      </div>
+      <Anecdote
+        Title="Anecdote with the most votes"
+        Anecdote={anecdotes[votes.indexOf(Math.max(...votes))]}
+        Votes={Math.max(...votes)}
+      />
     </>
   )
 }
