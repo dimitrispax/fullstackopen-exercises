@@ -1,10 +1,10 @@
 
-const Persons = ({ Filter }) => {
+const Persons = ({ Persons }) => {
 
     return (
         <>
             {
-                Filter.map((person) => {
+                Persons.map((person) => {
                     return (
                         <p key={person.name}>{person.name} {person.number}</p>
                     )

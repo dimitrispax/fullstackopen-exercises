@@ -14,12 +14,9 @@ const App = () => {
   const [newPhoneNumber, setNewPhoneNumber] = useState('')
   const [search, setSearch] = useState('')
 
-  /* Function that filters entries by name depending on the search value
-     and returns a new function. */
-  const filterEntriesByName = () => {
-    const filteredPersons = persons.filter((person) => person.name.toLowerCase().includes(search.toLowerCase()))
-    return filteredPersons;
-  }
+  /* Filter the person list by name using the search input field. */
+  const filteredPersons = persons.filter((person) => person.name.toLowerCase().includes(search.toLowerCase()))
+
 
   /* Function that adds a name in the persons list. */
   const addName = (event) => {
@@ -66,7 +63,7 @@ const App = () => {
         NewPhoneNumber={newPhoneNumber}
       />
       <h2>Numbers</h2>
-      <Persons Filter={filterEntriesByName()} />
+      <Persons Persons={filteredPersons} />
     </div>
   )
 }
