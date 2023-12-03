@@ -1,4 +1,7 @@
 import { useState } from 'react'
+import Filter from './Filter/Filter.jsx'
+import PersonForm from './PersonForm/PersonForm.jsx'
+import Persons from './Persons/Persons.jsx'
 
 const App = () => {
   const [persons, setPersons] = useState([
@@ -9,11 +12,20 @@ const App = () => {
   ])
   const [newName, setNewName] = useState('')
   const [newPhoneNumber, setNewPhoneNumber] = useState('')
+  const [search, setSearch] = useState('')
+
+  /* Function that filters entries by name depending on the search value
+     and returns a new function. */
+  const filterEntriesByName = () => {
+    const filteredPersons = persons.filter((person) => person.name.toLowerCase().includes(search.toLowerCase()))
+    return filteredPersons;
+  }
 
   /* Function that adds a name in the persons list. */
   const addName = (event) => {
     event.preventDefault()
-    /* Checking if name exists in the list, if it doesnt find return undefined. */
+    /* Checking if name exists in the list, 
+    if it doesnt find return undefined. */
     const nameExists = persons.find((person) => JSON.stringify(person.name) === JSON.stringify(newName))
 
     if (nameExists === undefined) // if the name doesnt exist,
@@ -36,26 +48,25 @@ const App = () => {
     setNewPhoneNumber(event.target.value);
   }
 
+  /* Function that handles the changes in the search input field. */
+  const handleSearchChange = (event) => {
+    setSearch(event.target.value);
+  }
+
   return (
     <div>
       <h2>Phonebook</h2>
-      <form onSubmit={addName}>
-        <div>
-          name: <input value={newName} onChange={handleNameChange} />
-        </div>
-        <div>number: <input value={newPhoneNumber} onChange={handlePhoneChange} /></div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
+      <Filter Search={search} HandleSearchChange={handleSearchChange} />
+      <h2>Add a new entry</h2>
+      <PersonForm
+        AddName={addName}
+        HandleNameChange={handleNameChange}
+        HandlePhoneChange={handlePhoneChange}
+        NewName={newName}
+        NewPhoneNumber={newPhoneNumber}
+      />
       <h2>Numbers</h2>
-      {
-        persons.map((person) => {
-          return (
-            <p key={person.name}>{person.name} {person.number}</p>
-          )
-        })
-      }
+      <Persons Filter={filterEntriesByName()} />
     </div>
   )
 }
