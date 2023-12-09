@@ -4,24 +4,30 @@ const url = 'http://localhost:3001/persons'
 
 /* Service that displays all the entries of the
  phonebook database. */
- const getAll = () => {
+ const getAllEntries = () => {
    const request = axios.get(url)
    return request.then(response => response.data)
  }
 
 /* Service that creates a new person entry in the
  phonebook database. */
- const create = newPerson => {
+ const createEntry = newPerson => {
    const request = axios.post(url, newPerson)
    return request.then(response => response.data)
  }
 
 /* Service that updates a person of the
  phonebook database. */
- const update = (id, newPerson) => {
+ const updateEntry = (id, newPerson) => {
     const request = axios.put(`${url}/${id}`, newPerson)
     return request.then(response => response.data)
  }
 
+ /* Service that deletes a person of the
+ phonebook database. */
+ const deleteEntry = (id) => {
+   return axios.delete(`${url}/${id}`)
+}
 
- export default { getAll, create, update }
+
+ export default { getAllEntries, createEntry, updateEntry, deleteEntry }

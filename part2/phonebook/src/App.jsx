@@ -9,6 +9,7 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newPhoneNumber, setNewPhoneNumber] = useState('')
   const [search, setSearch] = useState('')
+  const [deleteID, setDeleteID] = useState(0); // The ID of the person to be deleted.
 
   /* Filter the person list by name using the search input field. */
   const filteredPersons = persons.filter((person) => person.name.toLowerCase().includes(search.toLowerCase()))
@@ -26,33 +27,53 @@ const App = () => {
     else  // else, 
       alert(`${newName} is already added to phonebook`) // alerts that it already exists.
 
-    setNewName(''); // Clears the input field.
-    setNewPhoneNumber(''); // Clears the input field.
+    setNewName('') // Clears the input field.
+    setNewPhoneNumber('') // Clears the input field.
 
   }
 
   /* Function that handles the changes in the name input field. */
   const handleNameChange = (event) => {
-    setNewName(event.target.value);
+    setNewName(event.target.value)
   }
 
   /* Function that handles the changes in the phone input field. */
   const handlePhoneChange = (event) => {
-    setNewPhoneNumber(event.target.value);
+    setNewPhoneNumber(event.target.value)
   }
 
   /* Function that handles the changes in the search input field. */
   const handleSearchChange = (event) => {
-    setSearch(event.target.value);
+    setSearch(event.target.value)
+  }
+
+  /* Function that handles the deletion of an entry of the phonebook. */
+  const handleDelete = (id, name) => {
+    if (window.confirm(`Delete ${name}?`)) {
+      setDeleteID(id)
+    }
   }
 
   useEffect(() => {
     personsService
-      .getAll()
+      .getAllEntries()
       .then(response => {
-        setPersons(response.data)
+        setPersons(response)
+      })
+      .catch(error => {
+        console.log("Error")
       })
   }, [])
+
+  useEffect(() => {
+    if (deleteID !== 0) {
+      personsService
+        .deleteEntry(deleteID)
+        .then(response => {
+          setPersons(persons.filter(person => person.id !== deleteID))
+        })
+    }
+  }, [deleteID])
 
   return (
     <div>
@@ -67,7 +88,7 @@ const App = () => {
         NewPhoneNumber={newPhoneNumber}
       />
       <h2>Numbers</h2>
-      <Persons Persons={filteredPersons} />
+      <Persons Persons={filteredPersons} HandleDelete={handleDelete} />
     </div>
   )
 }
