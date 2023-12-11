@@ -9,24 +9,32 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newPhoneNumber, setNewPhoneNumber] = useState('')
   const [search, setSearch] = useState('')
-  const [deleteID, setDeleteID] = useState(0); // The ID of the person to be deleted.
 
   /* Filter the person list by name using the search input field. */
   const filteredPersons = persons.filter((person) => person.name.toLowerCase().includes(search.toLowerCase()))
 
-
   /* Function that adds a name in the persons list. */
   const addName = (event) => {
     event.preventDefault()
-    /* Checking if name exists in the list, 
-    if it doesnt find return undefined. */
+
+    /* Checking if name exists in the list, if it doesnt find return undefined. */
     const nameExists = persons.find((person) => JSON.stringify(person.name) === JSON.stringify(newName))
 
-    if (nameExists === undefined) // if the name doesnt exist,
-      setPersons(persons.concat({ name: newName, number: newPhoneNumber })) // adds it to the phonebook.
-    else  // else, 
-      alert(`${newName} is already added to phonebook`) // alerts that it already exists.
-
+    if (nameExists === undefined) {// if the name doesnt exist,
+      personsService
+        .createEntry({ name: newName, number: newPhoneNumber, id: persons.slice(-1)[0].id + 1 })
+        .then(response => {
+          setPersons(persons.concat(response)) // adds it to the phonebook.
+        })
+    }
+    else if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) { // asks the user to replace the number.
+      const personWithNewNumber = { ...nameExists, number: newPhoneNumber }
+      personsService
+        .updateEntry(personWithNewNumber.id, personWithNewNumber)
+        .then(response => {
+          setPersons(persons.map(person => (person.id !== personWithNewNumber.id) ? person : response))
+        })
+    }
     setNewName('') // Clears the input field.
     setNewPhoneNumber('') // Clears the input field.
 
@@ -50,7 +58,11 @@ const App = () => {
   /* Function that handles the deletion of an entry of the phonebook. */
   const handleDelete = (id, name) => {
     if (window.confirm(`Delete ${name}?`)) {
-      setDeleteID(id)
+      personsService
+        .deleteEntry(id)
+        .then(response => {
+          setPersons(persons.filter(person => person.id !== id))
+        })
     }
   }
 
@@ -65,15 +77,6 @@ const App = () => {
       })
   }, [])
 
-  useEffect(() => {
-    if (deleteID !== 0) {
-      personsService
-        .deleteEntry(deleteID)
-        .then(response => {
-          setPersons(persons.filter(person => person.id !== deleteID))
-        })
-    }
-  }, [deleteID])
 
   return (
     <div>
