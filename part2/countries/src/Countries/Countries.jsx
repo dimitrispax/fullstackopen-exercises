@@ -1,26 +1,29 @@
 import Country from '../Country/Country.jsx'
+import CountryItem from '../CountryItem/CountryItem.jsx'
 
-const Countries = ({ Countries }) => {
-    if (Countries.length > 10) {
+const Countries = ({ CountriesData }) => {
+
+
+    if (CountriesData.length > 10) {
         return (
             <p>Too many matches, specify another filter.</p>
         )
     }
-    else if (Countries.length < 10 && Countries.length > 1) {
+    else if (CountriesData.length < 10 && CountriesData.length > 1) {
         return (
-            <div>
+            <>
                 {
-                    Countries.map(country => {
+                    CountriesData.map(countryData => {
                         return (
-                            <p key={country.name.common}>{country.name.common}</p>
+                            <CountryItem key={countryData.name.common} CountryData={countryData} />
                         )
                     })
                 }
-            </div>
+            </>
         )
-    } else if (Countries.length === 1) {
+    } else if (CountriesData.length === 1) {
         return (
-            <Country Country={Countries} />
+            <Country CountryData={CountriesData[0]} />
         )
     } else {
         return (

@@ -1,13 +1,12 @@
-const Country = ({ Country }) => {
-    console.log(Country[0].flags.png);
+const Country = ({ CountryData }) => {
     return (
         <div>
-            <h2>{Country[0].name.common}</h2>
-            <p>capital {Country[0].capital}</p>
-            <p>area {Country[0].area}</p>
+            <h2>{CountryData.name.common}</h2>
+            <p>capital {CountryData.capital}</p>
+            <p>area {CountryData.area}</p>
             <h4>languages: </h4>
             {
-                Object.values(Country[0].languages).map(language => {
+                Object.values(CountryData.languages).map(language => {
                     return (
                         <ul key={language}>
                             <li>{language}</li>
@@ -15,7 +14,7 @@ const Country = ({ Country }) => {
                     )
                 })
             }
-            <img src={Country[0].flags.png} width={200} heigth={200} />
+            <img src={CountryData.flags.png} width={200} heigth={200} />
         </div>
 
     )
