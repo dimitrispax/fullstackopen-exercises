@@ -5,9 +5,9 @@ const url = 'http://localhost:3001/persons'
 /* Service that displays all the entries of the
  phonebook database. */
  const getAllEntries = () => {
-   const request = axios.get(url)
-   return request.then(response => response.data)
- }
+    const request = axios.get(url)
+    return request.then(response => response.data)
+  }
 
 /* Service that creates a new person entry in the
  phonebook database. */
