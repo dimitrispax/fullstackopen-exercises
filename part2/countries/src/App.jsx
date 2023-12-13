@@ -16,7 +16,7 @@ const App = () => {
 
   useEffect(() => {
     countriesService
-      .getAll()
+      .getAllCountries()
       .then(response => {
         setCountriesData(response)
       })
