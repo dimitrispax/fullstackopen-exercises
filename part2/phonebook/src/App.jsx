@@ -35,7 +35,7 @@ const App = () => {
           }, 2000);
         })
         .catch(error => {
-          setErrorMessage(`An error has occured with the creation of ${newName}.`)
+          setErrorMessage(error.response.data.error)
           setTimeout(() => {
             setErrorMessage('')
           }, 3000);
@@ -49,7 +49,7 @@ const App = () => {
           setPersons(persons.map(person => (person.id !== personWithNewNumber.id) ? person : response))
         })
         .catch(error => {
-          setErrorMessage(`Information of ${personWithNewNumber.name} has already been removed from server.`)
+          setErrorMessage(error.response.data.error)
           setTimeout(() => {
             setErrorMessage('')
           }, 3000);
