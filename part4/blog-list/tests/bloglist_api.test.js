@@ -41,6 +41,13 @@ test('blogs are 2', async () => {
   expect(res.body).toHaveLength(2)
 })
 
+test('the unique identifier is id', async () => {
+  const res = await api.get('/api/blogs')
+  res.body.forEach(blog => {
+    expect(blog.id).toBeDefined()
+  });
+})
+
 afterAll(async () => {
   await mongoose.connection.close()
 })
