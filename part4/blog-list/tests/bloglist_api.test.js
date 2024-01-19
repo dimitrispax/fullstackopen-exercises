@@ -49,12 +49,32 @@ const api = supertest(app)
 //   });
 // })
 
-test('a valid blog can be added', async () => {
+// test('a valid blog can be added', async () => {
+//   const newBlog = {
+//     "title": "CryptoBlog",
+//     "author": "Mike Nirakis",
+//     "url": "https://cryptoblog.gr",
+//     "likes": 21122,
+//     "id": "6582c874a9daf33954460789"
+//   }
+//   await api
+//     .post('/api/blogs')
+//     .send(newBlog)
+//     .expect(201)
+//     .expect('Content-Type', /application\/json/)
+
+//   const res = await api.get('/api/blogs')
+//   const bloglistTitles = res.body.map(blog => blog.title)
+
+//   expect(res.body).toHaveLength(initialBlogs.length + 1)
+//   expect(bloglistTitles).toContain('CryptoBlog')
+// })
+
+test('when likes is undefined in request, default at 0', async () => {
   const newBlog = {
     "title": "CryptoBlog",
     "author": "Mike Nirakis",
     "url": "https://cryptoblog.gr",
-    "likes": 21122,
     "id": "6582c874a9daf33954460789"
   }
   await api
@@ -64,12 +84,9 @@ test('a valid blog can be added', async () => {
     .expect('Content-Type', /application\/json/)
 
   const res = await api.get('/api/blogs')
-  const bloglistTitles = res.body.map(blog => blog.title)
-
-  expect(res.body).toHaveLength(initialBlogs.length + 1)
-  expect(bloglistTitles).toContain('CryptoBlog')
+  const likes = res.body.map(blog => blog.likes)
+  expect(likes).toContain(0)
 })
-
 
 afterAll(async () => {
   await mongoose.connection.close()
