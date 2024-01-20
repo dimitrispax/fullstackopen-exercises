@@ -1,4 +1,5 @@
 const blogsRouter = require('express').Router()
+const { default: mongoose } = require('mongoose')
 const Blog = require('../models/blog')
 
 blogsRouter.get('/', async (request, response, next) => {
@@ -24,8 +25,21 @@ blogsRouter.post('/', async (request, response, next) => {
   } else {
     response.status(404).end()
   }
-
-
+})
+//////////////////////
+///////DELETE////////
+////////////////////
+blogsRouter.delete('/:id', async (request, response, next) => {
+  /* Checking if id is valid */
+  if (mongoose.Types.ObjectId.isValid(request.params.id)) {
+    const res = await Blog.findByIdAndDelete(request.params.id)
+    if (res !== null) // Checking if the id exists in DB.
+      response.status(204).end()
+    else
+      response.status(404).end()
+  } else {  // if it isn't valid, throw 404.
+    response.status(404).end()
+  }
 })
 
 
