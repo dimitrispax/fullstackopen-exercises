@@ -6,14 +6,14 @@ const User = require('../models/user')
 //////////////////////
 ////////READ/////////
 ////////////////////
-blogsRouter.get('/', async (request, response, next) => {
+blogsRouter.get('/', async (request, response) => {
   const blogs = await Blog.find({}).populate('Users')
   response.json(blogs)
 })
 //////////////////////
 ///////CREATE////////
 ////////////////////
-blogsRouter.post('/', async (request, response, next) => {
+blogsRouter.post('/', async (request, response) => {
   const body = request.body
 
   const user = await User.findOne()
@@ -40,7 +40,7 @@ blogsRouter.post('/', async (request, response, next) => {
 //////////////////////
 ///////DELETE////////
 ////////////////////
-blogsRouter.delete('/:id', async (request, response, next) => {
+blogsRouter.delete('/:id', async (request, response) => {
   /* Checking if id is valid */
   if (mongoose.Types.ObjectId.isValid(request.params.id)) {
     const res = await Blog.findByIdAndDelete(request.params.id)
@@ -55,7 +55,7 @@ blogsRouter.delete('/:id', async (request, response, next) => {
 //////////////////////
 ///////UPDATE////////
 ////////////////////
-blogsRouter.put('/:id', async (request, response, next) => {
+blogsRouter.put('/:id', async (request, response) => {
   const body = request.body
 
   const newBlog = {

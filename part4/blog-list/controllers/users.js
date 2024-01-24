@@ -5,14 +5,16 @@ const bcrypt = require('bcrypt')
 //////////////////////
 ////////READ/////////
 ////////////////////
-usersRouter.get('/', async (request, response, next) => {
+usersRouter.get('/', async (request, response) => {
     const users = await User.find({}).populate('blogs')
     response.json(users)
 })
+
 //////////////////////
 ///////CREATE////////
 ////////////////////
 usersRouter.post('/', async (request, response, next) => {
+
     const { username, password, name } = request.body
 
     /* Validation Check */
@@ -39,8 +41,6 @@ usersRouter.post('/', async (request, response, next) => {
         catch (err) {
             next(err)
         }
-
-
     }
 })
 
