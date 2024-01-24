@@ -21,6 +21,28 @@ const initialBlogs = [{ // Initialized a blog list with 2 blogs.
 }
 ]
 
+const initialUsers = [
+    {
+        "username": "dimpax",
+        "name": "Dimitrios Paximadakis",
+        "blogs": [],
+        "id": "65afc3460fcd76412da38067"
+    },
+    {
+        "username": "alexpax",
+        "name": "Alexandros Paximadakis",
+        "blogs": [],
+        "id": "65afdb398751d1fa75695c8a"
+    },
+    {
+        "username": "koutras69",
+        "name": "Nikolaos Koutrakis",
+        "blogs": [],
+        "id": "65afdb688751d1fa75695c8e"
+    }
+]
+
 module.exports = {
-    initialBlogs
+    initialBlogs,
+    initialUsers
 }
