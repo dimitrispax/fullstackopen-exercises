@@ -1,13 +1,15 @@
 const blogsRouter = require('express').Router()
 const { default: mongoose } = require('mongoose')
+const jwt = require('jsonwebtoken')
 const Blog = require('../models/blog')
 const User = require('../models/user')
+
 
 //////////////////////
 ////////READ/////////
 ////////////////////
 blogsRouter.get('/', async (request, response) => {
-  const blogs = await Blog.find({}).populate('Users')
+  const blogs = await Blog.find({}).populate('user')
   response.json(blogs)
 })
 //////////////////////
@@ -16,7 +18,12 @@ blogsRouter.get('/', async (request, response) => {
 blogsRouter.post('/', async (request, response) => {
   const body = request.body
 
-  const user = await User.findOne()
+  const decodedToken = jwt.verify(request.token, process.env.SECRET)
+  if (!decodedToken.id) {
+    return response.status(401).json({ error: 'token invalid.' })
+  }
+
+  const user = await User.findById(decodedToken.id)
 
   const blog = new Blog({
     title: body.title,
@@ -37,6 +44,7 @@ blogsRouter.post('/', async (request, response) => {
     response.status(404).end()
   }
 })
+
 //////////////////////
 ///////DELETE////////
 ////////////////////
@@ -52,6 +60,7 @@ blogsRouter.delete('/:id', async (request, response) => {
     response.status(404).end()
   }
 })
+
 //////////////////////
 ///////UPDATE////////
 ////////////////////
@@ -75,8 +84,6 @@ blogsRouter.put('/:id', async (request, response) => {
   } else {  // if it isn't valid, throw 404.
     response.status(404).end()
   }
-
-
 
 })
 

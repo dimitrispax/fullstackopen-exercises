@@ -7,13 +7,13 @@ const bcrypt = require('bcrypt')
 ////////////////////
 usersRouter.get('/', async (request, response) => {
     const users = await User.find({}).populate('blogs')
-    response.json(users)
+    response.json(user)
 })
 
 //////////////////////
 ///////CREATE////////
 ////////////////////
-usersRouter.post('/', async (request, response, next) => {
+usersRouter.post('/', async (request, response) => {
 
     const { username, password, name } = request.body
 
@@ -32,15 +32,9 @@ usersRouter.post('/', async (request, response, next) => {
             name
         })
 
-        /* Implementation of a try catch because express-async did not
-            catch the validation error from 'mongoose-unique-validator' */
-        try {
-            const result = await user.save()
-            response.status(201).json(result)
-        }
-        catch (err) {
-            next(err)
-        }
+        const result = await user.save()
+        response.status(201).json(result)
+
     }
 })
 
