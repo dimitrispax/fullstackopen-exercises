@@ -49,16 +49,35 @@ blogsRouter.post('/', async (request, response) => {
 ///////DELETE////////
 ////////////////////
 blogsRouter.delete('/:id', async (request, response) => {
+
+  const decodedToken = jwt.verify(request.token, process.env.SECRET)
+  if (!decodedToken.id) {
+    return response.status(401).json({ error: 'token invalid.' })
+  }
+
+  const user = await User.findById(decodedToken.id)
+
+
+
+
   /* Checking if id is valid */
   if (mongoose.Types.ObjectId.isValid(request.params.id)) {
-    const res = await Blog.findByIdAndDelete(request.params.id)
-    if (res !== null) // Checking if the id exists in DB.
-      response.status(204).end()
-    else
-      response.status(404).end()
-  } else {  // if it isn't valid, throw 404.
+    const blog = await Blog.findById(request.params.id)
+    if (user._id.toString() === blog.user[0].toString()) {
+      const res = await Blog.findByIdAndDelete(request.params.id)
+      if (res !== null) // Checking if the id exists in DB.
+        response.status(204).end()
+      else
+        response.status(404).end()
+    }
+    else {
+      response.status(401).end()
+    }
+  }
+  else {  // if it isn't valid, throw 404.
     response.status(404).end()
   }
+
 })
 
 //////////////////////
