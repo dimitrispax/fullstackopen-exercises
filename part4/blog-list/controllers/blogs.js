@@ -1,6 +1,7 @@
 const blogsRouter = require('express').Router()
 const { default: mongoose } = require('mongoose')
 const jwt = require('jsonwebtoken')
+const middleware = require('../utils/middleware')
 const Blog = require('../models/blog')
 const User = require('../models/user')
 
@@ -12,11 +13,23 @@ blogsRouter.get('/', async (request, response) => {
   const blogs = await Blog.find({}).populate('user')
   response.json(blogs)
 })
+
+
 //////////////////////
 ///////CREATE////////
 ////////////////////
-blogsRouter.post('/', async (request, response) => {
+blogsRouter.post('/', middleware.tokenExtractor, middleware.userExtractor, async (request, response) => {
   const body = request.body
+
+  const decodedToken = jwt.verify(request.token, process.env.SECRET)
+  if (!decodedToken.id) {
+    return response.status(401).json({ error: 'token invalid.' })
+  }
+
+  const user = request.user
+  if (user === null)
+    response.status(404).json({ error: 'user not found' })
+
 
   const blog = new Blog({
     title: body.title,
@@ -25,6 +38,7 @@ blogsRouter.post('/', async (request, response) => {
     likes: body.likes ? body.likes : 0,
     user: user.id
   })
+
 
   if (blog.title === undefined || blog.url === undefined) {
     response.status(400).end()
@@ -41,7 +55,7 @@ blogsRouter.post('/', async (request, response) => {
 //////////////////////
 ///////DELETE////////
 ////////////////////
-blogsRouter.delete('/:id', async (request, response) => {
+blogsRouter.delete('/:id', middleware.tokenExtractor, middleware.userExtractor, async (request, response) => {
 
   const decodedToken = jwt.verify(request.token, process.env.SECRET)
   if (!decodedToken.id) {
@@ -53,20 +67,27 @@ blogsRouter.delete('/:id', async (request, response) => {
   /* Checking if id is valid */
   if (mongoose.Types.ObjectId.isValid(request.params.id)) {
     const blog = await Blog.findById(request.params.id)
-    if (user._id.toString() === blog.user[0].toString()) {
-      const res = await Blog.findByIdAndDelete(request.params.id)
-      if (res !== null) // Checking if the id exists in DB.
+    if (blog != null) { // Checking if the id exists in DB.
+      if (user._id.toString() === blog.user[0].toString()) {
+        await Blog.findByIdAndDelete(request.params.id)
+        let newUser = user
+        newUser.blogs = newUser.blogs.filter(userBlog => {
+          return userBlog.toString() !== request.params.id.toString()
+        })
+        await User.findByIdAndUpdate(newUser._id, newUser, { new: true })
         response.status(204).end()
-      else
-        response.status(404).end()
-    }
-    else {
-      response.status(401).end()
+      }
+      else {
+        response.status(401).json()
+      }
+    } else {
+      response.status(404).end()
     }
   }
   else {  // if it isn't valid, throw 404.
     response.status(404).end()
   }
+
 
 })
 
