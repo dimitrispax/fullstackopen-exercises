@@ -40,8 +40,8 @@ blogsRouter.post('/', middleware.tokenExtractor, middleware.userExtractor, async
   })
 
 
-  if (blog.title === undefined || blog.url === undefined) {
-    response.status(400).end()
+  if ((blog.title === undefined || !blog.title.length > 0) || (blog.url === undefined || !blog.url.length > 0)) {
+    response.status(400).json({ error: 'title or url undefined' })
   } else if (blog) {
     const result = await blog.save()
     user.blogs = user.blogs.concat(result._id)

@@ -1,7 +1,7 @@
 const Login = ({ LoginUser, NewUsername, HandleUsernameChange, NewPassword, HandlePasswordChange }) => {
     return (
         <div>
-            <h2>Log in to application</h2>
+            <h2>Log in to bloglist app</h2>
             <form onSubmit={LoginUser}>
                 <div>
                     username: <input value={NewUsername} onChange={HandleUsernameChange} />
