@@ -1,23 +1,21 @@
 import { useState, useEffect, useRef } from 'react'
+
 import blogService from './services/blogs'
 import loginService from './services/login'
-import Login from './components/Login'
+
 import Notification from './components/Notification'
 import Error from './components/Error'
 import Bloglist from './components/Bloglist'
-import BlogCreate from './components/BlogCreate'
+import LoginForm from './components/LoginForm'
+import BlogCreationForm from './components/BlogCreationForm'
 import Togglable from './components/Togglable'
 
 const App = () => {
+
   const [blogs, setBlogs] = useState([])
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [message, setMessage] = useState(null)
   const [errorMessage, setErrorMessage] = useState(null)
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
 
   const toggleVisibility = useRef()
 
@@ -35,39 +33,15 @@ const App = () => {
     }
   }, [])
 
-
-  const handleUsernameChange = (event) => {
-    setUsername(event.target.value)
-  }
-
-  const handlePasswordChange = (event) => {
-    setPassword(event.target.value)
-  }
-
-  const handleTitleChange = (event) => {
-    setTitle(event.target.value)
-  }
-  const handleAuthorChange = (event) => {
-    setAuthor(event.target.value)
-  }
-  const handleUrlChange = (event) => {
-    setUrl(event.target.value)
-  }
-
-
-
   /* Function that logs in a user in to the application. */
-  const loginUser = async (event) => {
+  const loginUser = async ({ username, password }) => {
 
-    event.preventDefault()
     try {
       const user = await loginService.login({ username, password })
       setUser(user)
 
       blogService.setToken(user.token)
       window.localStorage.setItem('loggedUser', JSON.stringify(user))
-      setUsername('')
-      setPassword('')
       setMessage(`Hello ${user.username}!`)
       setTimeout(() => {
         setMessage(null)
@@ -92,15 +66,8 @@ const App = () => {
     blogService.setToken(null)
   }
 
-  /* Function creates a newBlog out a user in to the application. */
-  const createBlog = async (event) => {
-    event.preventDefault()
-
-    const newBlog = {
-      title,
-      author,
-      url
-    }
+  /* Function creates a new blog out a user in to the application. */
+  const createBlog = async (newBlog) => {
 
     try {
       const responseBlog = await blogService.create(newBlog)
@@ -123,13 +90,7 @@ const App = () => {
       <Notification Message={message} />
       <Error ErrorMessage={errorMessage} />
       {user === null ?
-        <Login
-          LoginUser={loginUser}
-          NewUsername={username}
-          HandleUsernameChange={handleUsernameChange}
-          NewPassword={password}
-          HandlePasswordChange={handlePasswordChange}
-        />
+        <LoginForm LoginUser={loginUser} />
         :
         <>
           <h2>Blogs</h2>
@@ -137,22 +98,12 @@ const App = () => {
             <p style={{ marginRight: 5 }}>{user.name} is logged in</p>
             <button onClick={logoutUser}>Log out</button>
           </div>
-          <Togglable buttonLabel="new note" ref={toggleVisibility}>
-            <BlogCreate
-              CreateBlog={createBlog}
-              Title={title}
-              Author={author}
-              Url={url}
-              HandleTitleChange={handleTitleChange}
-              HandleAuthorChange={handleAuthorChange}
-              HandleUrlChange={handleUrlChange}
-            />
+          <Togglable buttonLabel="new blog" ref={toggleVisibility}>
+            <BlogCreationForm CreateBlog={createBlog} />
           </Togglable>
-
-          <Bloglist Blogs={blogs} User={user} LogoutUser={logoutUser} />
+          <Bloglist Blogs={blogs} />
         </>
       }
-
     </div >
   )
 }
