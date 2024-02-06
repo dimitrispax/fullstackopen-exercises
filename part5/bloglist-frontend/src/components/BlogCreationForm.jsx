@@ -8,12 +8,14 @@ const BlogCreationForm = ({ CreateBlog }) => {
 
     const createBlog = (event) => {
         event.preventDefault()
-
         CreateBlog({
             title,
             author,
             url
         })
+        setTitle('')
+        setAuthor('')
+        setUrl('')
     }
 
     return (

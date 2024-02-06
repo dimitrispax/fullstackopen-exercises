@@ -19,10 +19,13 @@ const App = () => {
 
   const toggleVisibility = useRef()
 
+
+
   useEffect(() => {
-    blogService.getAll().then(blogs =>
+    blogService.getAll().then(blogs => {
+      blogs.sort((a, b) => b.likes - a.likes)
       setBlogs(blogs)
-    )
+    })
   }, [])
 
   useEffect(() => {
@@ -66,11 +69,12 @@ const App = () => {
     blogService.setToken(null)
   }
 
-  /* Function creates a new blog out a user in to the application. */
+  /* Function that creates a new blog. */
   const createBlog = async (newBlog) => {
 
     try {
-      const responseBlog = await blogService.create(newBlog)
+      let responseBlog = await blogService.create(newBlog)
+      responseBlog.user[0] = { username: user.username, name: user.name, id: user.id }
       setBlogs(blogs.concat(responseBlog))
       setMessage(`Added ${responseBlog.title} by ${responseBlog.author}`)
       toggleVisibility.current.toggleVisibility()
@@ -84,6 +88,28 @@ const App = () => {
       }, 3000)
     }
   }
+
+  /* Function that updates a blog's likes. */
+  const updateBlog = async (updatedBlog, id) => {
+
+    try {
+      await blogService.update(updatedBlog, id)
+      setMessage(`You liked ${updatedBlog.title}, now it has ${updatedBlog.likes}`)
+      let updatedBlogs = blogs.map(blog => (JSON.stringify(blog.id) === JSON.stringify(id)) ? { ...blog, likes: updatedBlog.likes } : blog)
+      updatedBlogs.sort((a, b) => b.likes - a.likes)
+      setBlogs(updatedBlogs)
+      setTimeout(() => {
+        setMessage(null)
+      }, 2000)
+    } catch (err) {
+      setErrorMessage(err.response.data.error)
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 3000)
+    }
+  }
+
+
 
   return (
     <div>
@@ -101,7 +127,7 @@ const App = () => {
           <Togglable buttonLabel="New blog" ref={toggleVisibility}>
             <BlogCreationForm CreateBlog={createBlog} />
           </Togglable>
-          <Bloglist Blogs={blogs} User={user} />
+          <Bloglist Blogs={blogs} UpdateBlog={updateBlog} />
         </>
       }
     </div >
