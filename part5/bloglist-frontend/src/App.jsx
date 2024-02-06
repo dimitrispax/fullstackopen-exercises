@@ -98,10 +98,10 @@ const App = () => {
             <p style={{ marginRight: 5 }}>{user.name} is logged in</p>
             <button onClick={logoutUser}>Log out</button>
           </div>
-          <Togglable buttonLabel="new blog" ref={toggleVisibility}>
+          <Togglable buttonLabel="New blog" ref={toggleVisibility}>
             <BlogCreationForm CreateBlog={createBlog} />
           </Togglable>
-          <Bloglist Blogs={blogs} />
+          <Bloglist Blogs={blogs} User={user} />
         </>
       }
     </div >
