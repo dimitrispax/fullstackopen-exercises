@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import Login from './components/Login'
@@ -6,6 +6,7 @@ import Notification from './components/Notification'
 import Error from './components/Error'
 import Bloglist from './components/Bloglist'
 import BlogCreate from './components/BlogCreate'
+import Togglable from './components/Togglable'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -17,6 +18,8 @@ const App = () => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
+
+  const toggleVisibility = useRef()
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -103,6 +106,7 @@ const App = () => {
       const responseBlog = await blogService.create(newBlog)
       setBlogs(blogs.concat(responseBlog))
       setMessage(`Added ${responseBlog.title} by ${responseBlog.author}`)
+      toggleVisibility.current.toggleVisibility()
       setTimeout(() => {
         setMessage(null)
       }, 2000)
@@ -118,8 +122,8 @@ const App = () => {
     <div>
       <Notification Message={message} />
       <Error ErrorMessage={errorMessage} />
-      {user === null
-        ? <Login
+      {user === null ?
+        <Login
           LoginUser={loginUser}
           NewUsername={username}
           HandleUsernameChange={handleUsernameChange}
@@ -128,20 +132,28 @@ const App = () => {
         />
         :
         <>
-          <BlogCreate
-            CreateBlog={createBlog}
-            Title={title}
-            Author={author}
-            Url={url}
-            HandleTitleChange={handleTitleChange}
-            HandleAuthorChange={handleAuthorChange}
-            HandleUrlChange={handleUrlChange}
-          />
+          <h2>Blogs</h2>
+          <div style={{ display: 'inline-flex', height: 30, alignItems: 'center' }}>
+            <p style={{ marginRight: 5 }}>{user.name} is logged in</p>
+            <button onClick={logoutUser}>Log out</button>
+          </div>
+          <Togglable buttonLabel="new note" ref={toggleVisibility}>
+            <BlogCreate
+              CreateBlog={createBlog}
+              Title={title}
+              Author={author}
+              Url={url}
+              HandleTitleChange={handleTitleChange}
+              HandleAuthorChange={handleAuthorChange}
+              HandleUrlChange={handleUrlChange}
+            />
+          </Togglable>
+
           <Bloglist Blogs={blogs} User={user} LogoutUser={logoutUser} />
         </>
       }
 
-    </div>
+    </div >
   )
 }
 
