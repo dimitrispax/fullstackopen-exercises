@@ -94,10 +94,10 @@ const App = () => {
 
     try {
       await blogService.update(updatedBlog, id)
-      setMessage(`You liked ${updatedBlog.title}, now it has ${updatedBlog.likes}`)
       let updatedBlogs = blogs.map(blog => (JSON.stringify(blog.id) === JSON.stringify(id)) ? { ...blog, likes: updatedBlog.likes } : blog)
       updatedBlogs.sort((a, b) => b.likes - a.likes)
       setBlogs(updatedBlogs)
+      setMessage(`You liked ${updatedBlog.title}, now it has ${updatedBlog.likes}`)
       setTimeout(() => {
         setMessage(null)
       }, 2000)
@@ -109,7 +109,28 @@ const App = () => {
     }
   }
 
+  /* Function that removes a blog. */
+  const removeBlog = async (blogToRemoved) => {
 
+    try {
+      if (window.confirm(`Are you sure you want to remove ${blogToRemoved.title} by ${blogToRemoved.user[0].name}`)) {
+        const res = await blogService.remove(blogToRemoved.id)
+        console.log("res: ", res);
+        let updatedBlogs = blogs.filter(blog => JSON.stringify(blog.id) !== JSON.stringify(blogToRemoved.id))
+        updatedBlogs.sort((a, b) => b.likes - a.likes)
+        setBlogs(updatedBlogs)
+        setMessage(`You removed ${blogToRemoved.title} by ${blogToRemoved.name}`)
+      }
+      setTimeout(() => {
+        setMessage(null)
+      }, 2000)
+    } catch (err) {
+      setErrorMessage(err.response.data.error)
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 3000)
+    }
+  }
 
   return (
     <div>
@@ -127,7 +148,7 @@ const App = () => {
           <Togglable buttonLabel="New blog" ref={toggleVisibility}>
             <BlogCreationForm CreateBlog={createBlog} />
           </Togglable>
-          <Bloglist Blogs={blogs} UpdateBlog={updateBlog} />
+          <Bloglist Blogs={blogs} UpdateBlog={updateBlog} RemoveBlog={removeBlog} />
         </>
       }
     </div >

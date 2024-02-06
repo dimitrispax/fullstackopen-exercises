@@ -78,7 +78,7 @@ blogsRouter.delete('/:id', middleware.tokenExtractor, middleware.userExtractor, 
         response.status(204).end()
       }
       else {
-        response.status(401).json()
+        response.status(401).json({ error: 'You are not authorized to remove this blog.' })
       }
     } else {
       response.status(404).end()
