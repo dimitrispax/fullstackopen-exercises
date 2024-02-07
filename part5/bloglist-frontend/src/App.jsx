@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import {useState, useEffect, useRef} from 'react'
 
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -11,7 +11,6 @@ import BlogCreationForm from './components/BlogCreationForm'
 import Togglable from './components/Togglable'
 
 const App = () => {
-
   const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
   const [message, setMessage] = useState(null)
@@ -19,10 +18,8 @@ const App = () => {
 
   const toggleVisibility = useRef()
 
-
-
   useEffect(() => {
-    blogService.getAll().then(blogs => {
+    blogService.getAll().then((blogs) => {
       blogs.sort((a, b) => b.likes - a.likes)
       setBlogs(blogs)
     })
@@ -37,10 +34,9 @@ const App = () => {
   }, [])
 
   /* Function that logs in a user in to the application. */
-  const loginUser = async ({ username, password }) => {
-
+  const loginUser = async ({username, password}) => {
     try {
-      const user = await loginService.login({ username, password })
+      const user = await loginService.login({username, password})
       setUser(user)
 
       blogService.setToken(user.token)
@@ -50,10 +46,10 @@ const App = () => {
         setMessage(null)
       }, 2000)
     } catch (err) {
-      setErrorMessage("Wrong username or password")
+      setErrorMessage('Wrong username or password')
       setTimeout(() => {
         setErrorMessage(null)
-      }, 3000);
+      }, 3000)
     }
   }
 
@@ -71,10 +67,13 @@ const App = () => {
 
   /* Function that creates a new blog. */
   const createBlog = async (newBlog) => {
-
     try {
       let responseBlog = await blogService.create(newBlog)
-      responseBlog.user[0] = { username: user.username, name: user.name, id: user.id }
+      responseBlog.user[0] = {
+        username: user.username,
+        name: user.name,
+        id: user.id,
+      }
       setBlogs(blogs.concat(responseBlog))
       setMessage(`Added ${responseBlog.title} by ${responseBlog.author}`)
       toggleVisibility.current.toggleVisibility()
@@ -91,13 +90,18 @@ const App = () => {
 
   /* Function that updates a blog's likes. */
   const updateBlog = async (updatedBlog, id) => {
-
     try {
       await blogService.update(updatedBlog, id)
-      let updatedBlogs = blogs.map(blog => (JSON.stringify(blog.id) === JSON.stringify(id)) ? { ...blog, likes: updatedBlog.likes } : blog)
+      let updatedBlogs = blogs.map((blog) =>
+        JSON.stringify(blog.id) === JSON.stringify(id)
+          ? {...blog, likes: updatedBlog.likes}
+          : blog
+      )
       updatedBlogs.sort((a, b) => b.likes - a.likes)
       setBlogs(updatedBlogs)
-      setMessage(`You liked ${updatedBlog.title}, now it has ${updatedBlog.likes}`)
+      setMessage(
+        `You liked ${updatedBlog.title}, now it has ${updatedBlog.likes}`
+      )
       setTimeout(() => {
         setMessage(null)
       }, 2000)
@@ -111,15 +115,21 @@ const App = () => {
 
   /* Function that removes a blog. */
   const removeBlog = async (blogToRemoved) => {
-
     try {
-      if (window.confirm(`Are you sure you want to remove ${blogToRemoved.title} by ${blogToRemoved.user[0].name}`)) {
+      if (
+        window.confirm(
+          `Are you sure you want to remove ${blogToRemoved.title} by ${blogToRemoved.user[0].name}`
+        )
+      ) {
         const res = await blogService.remove(blogToRemoved.id)
-        console.log("res: ", res);
-        let updatedBlogs = blogs.filter(blog => JSON.stringify(blog.id) !== JSON.stringify(blogToRemoved.id))
+        let updatedBlogs = blogs.filter(
+          (blog) => JSON.stringify(blog.id) !== JSON.stringify(blogToRemoved.id)
+        )
         updatedBlogs.sort((a, b) => b.likes - a.likes)
         setBlogs(updatedBlogs)
-        setMessage(`You removed ${blogToRemoved.title} by ${blogToRemoved.name}`)
+        setMessage(
+          `You removed ${blogToRemoved.title} by ${blogToRemoved.name}`
+        )
       }
       setTimeout(() => {
         setMessage(null)
@@ -136,22 +146,28 @@ const App = () => {
     <div>
       <Notification Message={message} />
       <Error ErrorMessage={errorMessage} />
-      {user === null ?
+      {user === null ? (
         <LoginForm LoginUser={loginUser} />
-        :
+      ) : (
         <>
           <h2>Blogs</h2>
-          <div style={{ display: 'inline-flex', height: 30, alignItems: 'center' }}>
-            <p style={{ marginRight: 5 }}>{user.name} is logged in</p>
+          <div
+            style={{display: 'inline-flex', height: 30, alignItems: 'center'}}
+          >
+            <p style={{marginRight: 5}}>{user.name} is logged in</p>
             <button onClick={logoutUser}>Log out</button>
           </div>
-          <Togglable buttonLabel="New blog" ref={toggleVisibility}>
+          <Togglable buttonLabel='New blog' ref={toggleVisibility}>
             <BlogCreationForm CreateBlog={createBlog} />
           </Togglable>
-          <Bloglist Blogs={blogs} UpdateBlog={updateBlog} RemoveBlog={removeBlog} />
+          <Bloglist
+            Blogs={blogs}
+            UpdateBlog={updateBlog}
+            RemoveBlog={removeBlog}
+          />
         </>
-      }
-    </div >
+      )}
+    </div>
   )
 }
 

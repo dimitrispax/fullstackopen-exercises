@@ -1,25 +1,19 @@
+const Notification = ({Message}) => {
+  const notificationStyle = {
+    color: 'green',
+    background: 'lightgrey',
+    fontSize: '20px',
+    borderStyle: 'solid',
+    borderRadius: '5px',
+    padding: '10px',
+    marginBottom: '10px',
+  }
 
-const Notification = ({ Message }) => {
-    const notificationStyle = {
-        color: 'green',
-        background: 'lightgrey',
-        fontSize: '20px',
-        borderStyle: 'solid',
-        borderRadius: '5px',
-        padding: '10px',
-        marginBottom: '10px'
-    }
+  if (Message === null) {
+    return null
+  }
 
-
-    if (Message === null) {
-        return null
-    }
-
-    return (
-        <div style={notificationStyle}>
-            {Message}
-        </div>
-    )
+  return <div style={notificationStyle}>{Message}</div>
 }
 
 export default Notification

@@ -1,8 +1,7 @@
 import { useState } from 'react'
 
 const Blog = ({ blog, updateBlog, removeBlog }) => {
-
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(false)
 
   const blogStyle = {
     paddingTop: 5,
@@ -12,27 +11,30 @@ const Blog = ({ blog, updateBlog, removeBlog }) => {
     borderWidth: 1,
     marginTop: 5,
     marginBottom: 5,
-    alignItems: 'center'
+    alignItems: 'center',
   }
   const inlineButtonStyle = {
     height: 25,
     display: 'flex',
-    alignItems: 'center'
+    alignItems: 'center',
   }
   const buttonStyle = {
-    marginLeft: 5
+    marginLeft: 5,
   }
 
   const updateLike = (event) => {
     event.preventDefault()
 
-    updateBlog({
-      user: blog.user[0].id,
-      likes: blog.likes + 1,
-      author: blog.author,
-      title: blog.title,
-      url: blog.url
-    }, blog.id)
+    updateBlog(
+      {
+        user: blog.user[0].id,
+        likes: blog.likes + 1,
+        author: blog.author,
+        title: blog.title,
+        url: blog.url,
+      },
+      blog.id
+    )
   }
 
   const deleteBlog = (event) => {
@@ -40,27 +42,38 @@ const Blog = ({ blog, updateBlog, removeBlog }) => {
     removeBlog(blog)
   }
 
-  return (
-    (!visible) ?
-      <div style={blogStyle}>
-        {blog.title} {blog.author}
-        <button style={buttonStyle} onClick={() => setVisible(!visible)}>Show Details</button>
-      </div >
-      :
-      <div style={blogStyle}>
-        <div style={inlineButtonStyle}>
-          <p>{blog.title} {blog.author}</p>
-          <button style={buttonStyle} onClick={() => setVisible(!visible)}>Hide Details</button>
-        </div>
-        <a href={blog.url}>{blog.url}</a>
-        <div style={inlineButtonStyle}>
-          <p>likes: {blog.likes}</p>
-          <button style={buttonStyle} onClick={updateLike}>Like Blog</button>
-        </div>
-        <p>{blog.user[0] !== null && blog.user[0].name}</p>
-        <button onClick={deleteBlog}>Remove Blog</button>
-      </div >
-
+  return !visible ? (
+    <div style={blogStyle}>
+      {blog.title} {blog.author}
+      <button style={buttonStyle} onClick={() => setVisible(!visible)}>
+        Show Details
+      </button>
+    </div>
+  ) : (
+    <div style={blogStyle}>
+      <div style={inlineButtonStyle}>
+        <p>
+          {blog.title} {blog.author}
+        </p>
+        <button style={buttonStyle} onClick={() => setVisible(!visible)}>
+          Hide Details
+        </button>
+      </div>
+      <a href={blog.url}>{blog.url}</a>
+      <div style={inlineButtonStyle}>
+        <p>likes: {blog.likes}</p>
+        <button style={buttonStyle} onClick={updateLike}>
+          Like Blog
+        </button>
+      </div>
+      <p>{blog.user[0] !== null && blog.user[0].name}</p>
+      {JSON.parse(window.localStorage.getItem('loggedUser')).username ===
+      blog.user[0].username ? (
+          <button onClick={deleteBlog}>Remove Blog</button>
+        ) : (
+          <></>
+        )}
+    </div>
   )
 }
 
